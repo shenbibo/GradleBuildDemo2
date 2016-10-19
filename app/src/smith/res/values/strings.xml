@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">GradleBuildDemo_Smith</string>
+    <string name="hello">hello world, smith</string>
+    <string name="enter_button_str">enter smith</string>
+    <string name="cancel_button_str">cancel smith</string>
+</resources>
