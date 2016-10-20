@@ -15,7 +15,9 @@
         android:id="@+id/hello"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello"/>
+        android:text="@string/hello"
+        android:textColor="@color/helloColor"
+        android:background="@color/textBackground"/>
 
     <Button
         android:id="@+id/enter_button"
