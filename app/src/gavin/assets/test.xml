@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test>
+    <msg>this is the gavin msg!!!</msg>
+    <msgList>
+        <newMsg>this is gavin 1 msg</newMsg>
+        <newMsg>this is gavin 2 msg</newMsg>
+    </msgList>
+</test>
