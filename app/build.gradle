@@ -34,20 +34,30 @@ android {
         }
     }
 
+    //使用dimensions将一些公共的修改独立出来，可以重复使用，减小代码的重复
+    flavorDimensions 'type', 'common'
+
     //多渠道打包
     productFlavors{
         sky{
+            dimension 'type'
             //直接在原有包名后面添加
             applicationIdSuffix ".sky"
         }
 
         gavin{
+            dimension 'type'
             //重新命名包名
             applicationId "com.gavin.gradlebuilddemo"
         }
 
         smith{
+            dimension 'type'
             applicationId "com.smith.gradlebuilddemo"
+        }
+
+        commonClient{
+            dimension 'common'
         }
     }
 

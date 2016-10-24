@@ -4,4 +4,5 @@
     <string name="enter_button_str">enter</string>
     <string name="cancel_button_str">cancel</string>
     <string name="input_tips">Please input the word you want</string>
+    <string name="cancel_tips_msg">button is clicked</string>
 </resources>

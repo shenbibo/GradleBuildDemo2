@@ -1,0 +1,3 @@
+<resources>
+    <string name="cancel_tips_msg">the %s button is clicked</string>
+</resources>
