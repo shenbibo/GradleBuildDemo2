@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="listMsg">
+        <item>This is CIA</item>
+        <item>This is FBI</item>
+        <item>This is DHS</item>
+        <item>This is NYPD</item>
+        <item>This is NAS</item>
+        <item>This is CDC</item>
+        <item>This is UFO</item>
+        <item>This is WIF</item>
+        <item>This is GOD</item>
+        <item>This is GIT</item>
+        <item>This is SVN</item>
+        <item>This is CHINA</item>
+        <item>This is WWW</item>
+        <item>This is EMOJI</item>
+        <item>This is NAXX</item>
+    </string-array>
+</resources>
