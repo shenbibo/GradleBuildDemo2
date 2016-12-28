@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:text="this is sky's test activity, we can see the text!!"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:background="#cd88de"
+        android:textSize="25sp"/>
+
+    <Button
+        android:text="sky favor"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/skyButton"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>

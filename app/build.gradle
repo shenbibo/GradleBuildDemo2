@@ -1,38 +1,149 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'com.android.library'
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
 
-    signingConfigs{
+    signingConfigs {
+        debug {
+            keyAlias keystoreProperties['debugKeyAlias']
+            keyPassword keystoreProperties['debugKeyPassword']
+            storeFile file(keystoreProperties['debugStoreFile'])
+            storePassword keystoreProperties['debugStorePassword']
+        }
+
         release{
-            storeFile file('sign/platform.keystore')
-            storePassword 'android'
-            keyAlias 'androidreleasekey'
-            keyPassword 'android'
+            keyAlias keystoreProperties['releaseKeyAlias']
+            keyPassword keystoreProperties['releaseKeyPassword']
+            storeFile file(keystoreProperties['releaseStoreFile'])
+            storePassword keystoreProperties['releaseStorePassword']
         }
     }
 
-
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
     defaultConfig {
-        applicationId "com.sky.gradlebuilddemo"
-        minSdkVersion 14
-        targetSdkVersion 24
+        applicationId "com.inpor.fmcdevicedemon"
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        resConfigs "zh-rCN", "xxhdpi"
     }
+
     buildTypes {
         release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        custom{
             zipAlignEnabled true
-            debuggable true
-            jniDebuggable true
-            renderscriptDebuggable true
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+
+            //指定签名文件为release签名
             signingConfig signingConfigs.release
+
+            minifyEnabled true
+            shrinkResources true
+
+            resValue "string", "custom_name", "测试用户"
         }
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    //过滤只打包英文和简体中文的资源
+    splits{
+        //设置根据language拆分测试未通过，应该是字符串的表现形式不对
+//        language{
+//            enable true
+//            include "values-zh-rCN"
+//            include "zh-rCN"
+//        }
+
+//        density{
+//            enable true
+//            reset()  // Clears the default list from all densities to no densities.
+//            include "mdpi", "xxhdpi" // Specifies the two densities we want to generate APKs for.
+//        }
+    }
+
+    sourceSets{
+        main{
+            jniLibs.srcDirs=['libs']
+        }
+
+        sky{
+            println rootProject.projectDir.absolutePath
+
+            jniLibs.srcDirs=[(rootProject.projectDir.absolutePath + '/jnilibs')]
+//            assets.srcDirs=[rootProject.projectDir.absolutePath + '/assets/skyTestAssets']
+//            assets.exclude (project.projectDir.absolutePath + "\\src\\main\\**\\mainIngoreTest.txt")
+//            assets.exclude(rootProject.projectDir.absolutePath + '/assets/skyTestAssets/skyTestAssets.txt')
+//            FileTreeElement
+//            java.exclude project.projectDir.absolutePath + "/src/main/**/MainTest.java"
+//            java {
+//                exclude project.projectDir.absolutePath + "/src/main/**/MainTest.java"
+//            }
+//            assets.filter
+
+            assets{
+                //使用srcDir方法设置不允许新设置的目录下和main集合下的assets目录下的出现一样名字的文件
+//                srcDir (rootProject.projectDir.absolutePath + '/assets/skyTestAssets')
+                println "assets is test"
+
+                srcDirs=[rootProject.projectDir.absolutePath + '/assets/skyTestAssets']
+                Set includeFiles = includes
+                println("includes.size = " + includeFiles.size())
+
+                Iterator iver = includeFiles.iterator()
+                while (iver.hasNext()){
+                    println iver.next()
+                }
+
+//                filter.exclude {
+//                    File f = it.file
+//                    println f.absolutePath
+//                    f.absolutePath.endsWith("mainIngoreTest.txt")
+//                }
+
+                exclude('/assets/skyTestAssets/skyTestAssets.txt')
+
+                Set excludeFiles = excludes
+                println("excludes.size = " + excludeFiles.size())
+
+                Iterator exiver = excludeFiles.iterator()
+                while (exiver.hasNext()){
+                    println exiver.next()
+                }
+            }
+
+            java{
+                filter.exclude{
+                    File f = it.file
+                    println f.absolutePath
+                    f.absolutePath.endsWith("MainTest.java")
+                }
+            }
+        }
+    }
+
 
     //使用dimensions将一些公共的修改独立出来，可以重复使用，减小代码的重复
     flavorDimensions 'type', 'common'
