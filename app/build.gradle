@@ -37,7 +37,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
         resConfigs "zh-rCN", "xxhdpi"
     }
 
@@ -61,6 +60,7 @@ android {
 
             resValue "string", "custom_name", "测试用户"
         }
+
     }
 
     lintOptions {
@@ -89,59 +89,24 @@ android {
             jniLibs.srcDirs=['libs']
         }
 
-        sky{
-            println rootProject.projectDir.absolutePath
+        custom{
+            //指定一个新的jnilibs为根目录下的jnilibs
+            jniLibs.srcDirs=[rootProject.projectDir.absolutePath + '/jnilibs']
 
-            jniLibs.srcDirs=[(rootProject.projectDir.absolutePath + '/jnilibs')]
-//            assets.srcDirs=[rootProject.projectDir.absolutePath + '/assets/skyTestAssets']
-//            assets.exclude (project.projectDir.absolutePath + "\\src\\main\\**\\mainIngoreTest.txt")
-//            assets.exclude(rootProject.projectDir.absolutePath + '/assets/skyTestAssets/skyTestAssets.txt')
-//            FileTreeElement
-//            java.exclude project.projectDir.absolutePath + "/src/main/**/MainTest.java"
-//            java {
-//                exclude project.projectDir.absolutePath + "/src/main/**/MainTest.java"
-//            }
-//            assets.filter
+            //指定一个新的assets为根目录下的skyTestAssets目录
+            assets.srcDirs = [rootProject.projectDir.absolutePath + '/assets/skyTestAssets']
 
-            assets{
-                //使用srcDir方法设置不允许新设置的目录下和main集合下的assets目录下的出现一样名字的文件
-//                srcDir (rootProject.projectDir.absolutePath + '/assets/skyTestAssets')
-                println "assets is test"
-
-                srcDirs=[rootProject.projectDir.absolutePath + '/assets/skyTestAssets']
-                Set includeFiles = includes
-                println("includes.size = " + includeFiles.size())
-
-                Iterator iver = includeFiles.iterator()
-                while (iver.hasNext()){
-                    println iver.next()
-                }
-
-//                filter.exclude {
-//                    File f = it.file
-//                    println f.absolutePath
-//                    f.absolutePath.endsWith("mainIngoreTest.txt")
-//                }
-
-                exclude('/assets/skyTestAssets/skyTestAssets.txt')
-
-                Set excludeFiles = excludes
-                println("excludes.size = " + excludeFiles.size())
-
-                Iterator exiver = excludeFiles.iterator()
-                while (exiver.hasNext()){
-                    println exiver.next()
-                }
-            }
-
-            java{
-                filter.exclude{
-                    File f = it.file
-                    println f.absolutePath
-                    f.absolutePath.endsWith("MainTest.java")
-                }
-            }
+            println(providedConfigurationName)
+            println(name)
+            println(packageConfigurationName)
+            println(compileConfigurationName)
         }
+
+        //此处增加一个空的sourceSet，是为了解决在dependencies中使用skyCommonClientCustomCompile 指定依赖项时提示找不到方法的错误
+        skyCommonClientCustom{
+
+        }
+
     }
 
 
@@ -154,21 +119,45 @@ android {
             dimension 'type'
             //直接在原有包名后面添加
             applicationIdSuffix ".sky"
+
+            //指定不同的版本
+            versionName '1.2.0'
+            versionCode 120
         }
 
         gavin{
             dimension 'type'
             //重新命名包名
             applicationId "com.gavin.gradlebuilddemo"
+
+            //指定不同的最小编译版本
+            minSdkVersion 17
+            targetSdkVersion 21
         }
 
         smith{
             dimension 'type'
             applicationId "com.smith.gradlebuilddemo"
+
+            //指定不同的resConfig
+            resConfigs "en", "hdpi"
+
+            //添加resValue
+            resValue 'string', 'smith', 'this is smith'
         }
 
         commonClient{
             dimension 'common'
+
+            //添加resValue
+            resValue 'string', 'common_client', 'this is common_client'
+        }
+
+        commonPrivate{
+            dimension 'common'
+
+            //指定一个私有的混淆规则
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-private.pro'
         }
     }
 
@@ -182,4 +171,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     testCompile 'junit:junit:4.12'
+
+    // flavor为sky的指定jar库，且不使用libs下的`okhttp-3.2.0.jar`库，使用skyCommon目录下的okhttp-3.3.1.jar
+    skyCompile fileTree(include: ['*.jar'], dir: 'libs', excludes: ['okhttp-3.2.0.jar'])
+    skyCompile fileTree(include: ['*.jar'], dir: 'jar/sky')
+
+    // 构建变体依赖项指定，在构建该版本apk时，编译时增加使用该目录下的jar包
+    skyCommonClientCustomCompile fileTree(include: ['*.jar'], dir: 'jar/skyCommonClientCustom')
 }
