@@ -20,7 +20,7 @@ android {
             storePassword keystoreProperties['debugStorePassword']
         }
 
-        release{
+        release {
             keyAlias keystoreProperties['releaseKeyAlias']
             keyPassword keystoreProperties['releaseKeyPassword']
             storeFile file(keystoreProperties['releaseStoreFile'])
@@ -46,7 +46,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-        custom{
+        custom {
             zipAlignEnabled true
             debuggable false
             jniDebuggable false
@@ -69,7 +69,7 @@ android {
     }
 
     //过滤只打包英文和简体中文的资源
-    splits{
+    splits {
         //设置根据language拆分测试未通过，应该是字符串的表现形式不对
 //        language{
 //            enable true
@@ -84,14 +84,14 @@ android {
 //        }
     }
 
-    sourceSets{
-        main{
-            jniLibs.srcDirs=['libs']
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
         }
 
-        custom{
+        custom {
             //指定一个新的jnilibs为根目录下的jnilibs
-            jniLibs.srcDirs=[rootProject.projectDir.absolutePath + '/jnilibs']
+            jniLibs.srcDirs = [rootProject.projectDir.absolutePath + '/jnilibs']
 
             //指定一个新的assets为根目录下的skyTestAssets目录
             assets.srcDirs = [rootProject.projectDir.absolutePath + '/assets/skyTestAssets']
@@ -103,19 +103,18 @@ android {
         }
 
         //此处增加一个空的sourceSet，是为了解决在dependencies中使用skyCommonClientCustomCompile 指定依赖项时提示找不到方法的错误
-        skyCommonClientCustom{
+        skyCommonClientCustom {
 
         }
 
     }
 
-
     //使用dimensions将一些公共的修改独立出来，可以重复使用，减小代码的重复
     flavorDimensions 'type', 'common'
 
     //多渠道打包
-    productFlavors{
-        sky{
+    productFlavors {
+        sky {
             dimension 'type'
             //直接在原有包名后面添加
             applicationIdSuffix ".sky"
@@ -125,7 +124,7 @@ android {
             versionCode 120
         }
 
-        gavin{
+        gavin {
             dimension 'type'
             //重新命名包名
             applicationId "com.gavin.gradlebuilddemo"
@@ -135,7 +134,7 @@ android {
             targetSdkVersion 21
         }
 
-        smith{
+        smith {
             dimension 'type'
             applicationId "com.smith.gradlebuilddemo"
 
@@ -146,18 +145,35 @@ android {
             resValue 'string', 'smith', 'this is smith'
         }
 
-        commonClient{
+        commonClient {
             dimension 'common'
 
             //添加resValue
             resValue 'string', 'common_client', 'this is common_client'
         }
 
-        commonPrivate{
+        commonPrivate {
             dimension 'common'
 
             //指定一个私有的混淆规则
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-private.pro'
+        }
+    }
+
+    //修改生成的apk的名称，命名为demo-flavorsName-buildType-versionName.apk
+    applicationVariants.all { variant ->
+        //遍历所有的输出文件
+        variant.outputs.each { output ->
+            File tempFile = output.outputFile
+            //对于包含`commonClient` flavor的我们在名称中去掉它
+            if (variant.productFlavors[1].name.contains("commonClient")) {
+
+                output.outputFile = new File(tempFile.parent, tempFile.name.replace(tempFile.name,
+                        "demo" + variant.productFlavors[0].name + "_" + variant.buildType.name + "_${variant.versionName}.apk"))
+            } else {
+                output.outputFile = new File(tempFile.parent, tempFile.name.replace(tempFile.name,
+                        "demo" + variant.productFlavors[0].name + "_" + variant.productFlavors[1].name + "_" + variant.buildType.name + "_${variant.versionName}.apk"))
+            }
         }
     }
 
