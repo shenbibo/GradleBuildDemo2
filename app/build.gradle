@@ -37,7 +37,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        resConfigs "zh-rCN", "xxhdpi"
+
+        //注意如果在这里指定了dpi，则flavor中不能指定的dpi与这里必须一致否则会报错
+        resConfigs "zh-rCN", "xhdpi"
     }
 
     buildTypes {
@@ -57,6 +59,7 @@ android {
 
             minifyEnabled true
             shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             resValue "string", "custom_name", "测试用户"
         }
@@ -138,11 +141,14 @@ android {
             dimension 'type'
             applicationId "com.smith.gradlebuilddemo"
 
-            //指定不同的resConfig
-            resConfigs "en", "hdpi"
+            //指定不同的resConfig，此处flavor中指定的dpi必须一致否则会报错
+            //这里指定的资源语言种类不会覆盖defaultConfig中的，会叠加
+            //如果想在flavor中设置dpi就不能在defaultConfig中设置
+            resConfigs "zh-rHK"
+
 
             //添加resValue
-            resValue 'string', 'smith', 'this is smith'
+            resValue 'string', 'smith', 'this is smith and set by build.gradle'
         }
 
         commonClient {
@@ -169,11 +175,23 @@ android {
             if (variant.productFlavors[1].name.contains("commonClient")) {
 
                 output.outputFile = new File(tempFile.parent, tempFile.name.replace(tempFile.name,
-                        "demo" + variant.productFlavors[0].name + "_" + variant.buildType.name + "_${variant.versionName}.apk"))
+                        "demo_" + variant.productFlavors[0].name + "_" + variant.buildType.name + "_${variant.versionName}.apk"))
             } else {
                 output.outputFile = new File(tempFile.parent, tempFile.name.replace(tempFile.name,
-                        "demo" + variant.productFlavors[0].name + "_" + variant.productFlavors[1].name + "_" + variant.buildType.name + "_${variant.versionName}.apk"))
+                        "demo_" + variant.productFlavors[0].name + "_" + variant.productFlavors[1].name + "_" + variant.buildType.name + "_${variant.versionName}.apk"))
             }
+        }
+    }
+
+    // 移除不需要打包的apk
+    variantFilter { variant ->
+        String buildTypeName = variant.buildType.name
+        String flavors0Name = variant.getFlavors().get(0).name
+
+        //对于编译类型为`release 或者 custom` 并且 flavors0类型为`smith 或 gavin`的构建类型直接忽略，不用编译
+        if((buildTypeName.equals('release') || buildTypeName.equals('custom'))
+                && (flavors0Name.equals('smith') || flavors0Name.equals('gavin'))) {
+            variant.setIgnore(true);
         }
     }
 
@@ -189,8 +207,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // flavor为sky的指定jar库，且不使用libs下的`okhttp-3.2.0.jar`库，使用skyCommon目录下的okhttp-3.3.1.jar
-    skyCompile fileTree(include: ['*.jar'], dir: 'libs', excludes: ['okhttp-3.2.0.jar'])
-    skyCompile fileTree(include: ['*.jar'], dir: 'jar/sky')
+    skyCompile fileTree(include: ['*.jar'], dir: 'jar/sky', excludes: ['okhttp-3.2.0.jar'])
 
     // 构建变体依赖项指定，在构建该版本apk时，编译时增加使用该目录下的jar包
     skyCommonClientCustomCompile fileTree(include: ['*.jar'], dir: 'jar/skyCommonClientCustom')
