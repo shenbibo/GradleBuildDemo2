@@ -49,6 +49,9 @@ android {
                 APP_KEY_VALUE : defaultConfig.appKey[0].text(),
                 APP_ID_VALUE  : defaultConfig.id[0].text()
         ]
+
+        buildConfigField 'int', 'ID', '0'
+
     }
 
     buildTypes {
@@ -71,6 +74,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             resValue "string", "custom_name", "测试用户"
+
         }
 
     }
@@ -140,6 +144,8 @@ android {
                     APP_KEY_VALUE : skyConfig.appKey[0].text(),
                     APP_ID_VALUE  : skyConfig.id[0].text()
             ]
+
+            buildConfigField 'int', 'ID', '1'
         }
 
         gavin {
@@ -156,6 +162,7 @@ android {
                     APP_KEY_VALUE : gavinConfig.appKey[0].text(),
                     APP_ID_VALUE  : gavinConfig.id[0].text()
             ]
+
         }
 
         smith {
