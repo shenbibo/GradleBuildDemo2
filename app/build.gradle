@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+// 加载自定义的utils.gradle
+apply from: rootProject.projectDir.getAbsolutePath() + File.separator + "utils.gradle"
+
 //apply plugin: 'com.android.library'
 // Create a variable called keystorePropertiesFile, and initialize it to your
 // keystore.properties file, in the rootProject folder.
@@ -40,6 +43,12 @@ android {
 
         //注意如果在这里指定了dpi，则flavor中不能指定的dpi与这里必须一致否则会报错
         resConfigs "zh-rCN", "xhdpi"
+
+        def defaultConfig = parseXml("app/config/main/config.xml")
+        manifestPlaceholders = [
+                APP_KEY_VALUE : defaultConfig.appKey[0].text(),
+                APP_ID_VALUE  : defaultConfig.id[0].text()
+        ]
     }
 
     buildTypes {
@@ -125,6 +134,12 @@ android {
             //指定不同的版本
             versionName '1.2.0'
             versionCode 120
+
+            def skyConfig = parseXml("app/config/sky/config.xml")
+            manifestPlaceholders = [
+                    APP_KEY_VALUE : skyConfig.appKey[0].text(),
+                    APP_ID_VALUE  : skyConfig.id[0].text()
+            ]
         }
 
         gavin {
@@ -135,6 +150,12 @@ android {
             //指定不同的最小编译版本
             minSdkVersion 17
             targetSdkVersion 21
+
+            def gavinConfig = parseXml("app/config/gavin/config.xml")
+            manifestPlaceholders = [
+                    APP_KEY_VALUE : gavinConfig.appKey[0].text(),
+                    APP_ID_VALUE  : gavinConfig.id[0].text()
+            ]
         }
 
         smith {
@@ -206,7 +227,7 @@ dependencies {
     compile 'com.android.support:design:24.2.1'
     testCompile 'junit:junit:4.12'
 
-    // flavor为sky的指定jar库，且不使用libs下的`okhttp-3.2.0.jar`库，使用skyCommon目录下的okhttp-3.3.1.jar
+    // flavor为sky的指定jar库，且不使用`okhttp-3.2.0.jar`库，使用skyCommon目录下的okhttp-3.3.1.jar
     skyCompile fileTree(include: ['*.jar'], dir: 'jar/sky', excludes: ['okhttp-3.2.0.jar'])
 
     // 构建变体依赖项指定，在构建该版本apk时，编译时增加使用该目录下的jar包

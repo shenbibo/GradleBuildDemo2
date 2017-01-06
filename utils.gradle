@@ -1,0 +1,13 @@
+
+/**
+ * 解析XML文件
+ * */
+def parseXml(String path) {
+    println ("parseXml called, path = " + path)
+    return new XmlParser().parse(path)
+}
+
+
+ext {
+    parseXml       = this.&parseXml
+}
